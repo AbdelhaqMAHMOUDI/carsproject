@@ -96,4 +96,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
     }
+
+    
+    public function getFutureUser(): ?FutureUser
+    {
+        return $this->future_user;
+    }
+
+    public function setFutureUser(?FutureUser $future_user): self
+    {
+        $this->future_user = $future_user;
+
+        return $this;
+    }
 }

@@ -54,6 +54,8 @@ export default function Home() {
                   <option value="Française">Française</option>
                   <option value="Marocaine">Marocaine</option>
                   <option value="Italienne">Italienne</option>
+                  <option value="Algérienne">Algérienne</option>
+                  <option value="Tunisienne">Tunisienne</option>
                 </select>
               </div>
               <div id="checkbox">
