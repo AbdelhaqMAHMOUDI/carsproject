@@ -6,6 +6,20 @@ import FooterComponent from '../components/FooterComponent';
 export default function Home() {
   const router = useRouter();
 
+  // const handleSubmit = () => {
+  //   fetch("http://localhost:8000/api/.user/login", {
+  //     body: JSON.stringify({ username: "admin@myapp.com", password: "admin" }),
+  //     method: "POST",
+  // headers: {
+  //   'Content-Type': 'application/json'
+  // }
+  //   }).then((response) => response.json()).then((response) => {
+  //console.log(response)
+  // localStorage.setItem("token", response.token);
+  // })
+  // }
+  // }
+
   return (
     <article>
       <Header user="Abdelhaq" />

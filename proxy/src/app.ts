@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 import checkToken from "./middlewares/checkToken";
 import userService from "./services/user";
@@ -24,9 +25,13 @@ function checkHeaders(req, res, next) {
 
 }
 
+app.use(cors({
+  origin: '*'
+}));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(checkToken());
+
 
 app.get(urlApi, (_, res) => {
   res.send("Hello API");
