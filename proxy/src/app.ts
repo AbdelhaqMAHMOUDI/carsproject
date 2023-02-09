@@ -47,6 +47,29 @@ app.get("/api/.user/future-users", checkHeaders, (req, res) => {
 
 });
 
+
+app.post("/api/.user/register", (req, res) => {
+
+  console.log(req.body);
+
+  axios.post("http://nginx/api/register/", {
+    lastname: req.body.nom,
+    firstname: req.body.prenom,
+    email: req.body.email,
+    country: req.body.nationalite,
+    phonenumber: req.body.numero_tel
+  }, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).then((onfulfilled) => res.send(onfulfilled.data))
+    .catch((error) => res.send({ error: error, data: req.body }))
+    ;
+
+});
+
+
+
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
 });

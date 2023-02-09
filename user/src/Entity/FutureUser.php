@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\FutureUserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: FutureUserRepository::class)]
 class FutureUser
@@ -13,23 +15,20 @@ class FutureUser
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $ID = null;
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $Email = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $Nom = null;
+    private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
     private ?string $prenom = null;
 
     #[ORM\Column]
-    private ?int $Numero_tel = null;
+    private ?int $numero_tel = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nationalit�e = null;
+    private ?string $nationalite = null;
 
     #[ORM\Column]
     private ?bool $inscription_validee = null;
@@ -39,19 +38,19 @@ class FutureUser
         return $this->id;
     }
 
-    public function setID(int $ID): self
+    public function setId(int $id): self
     {
-        $this->ID = $ID;
+        $this->id = $id;
 
         return $this;
     }
 
     public function getEmail(): ?string
     {
-        return $this->Email;
+        return $this->email;
     }
 
-    public function setEmail(string $Email): self
+    public function setEmail(string $email): self
     {
         $this->Email = $Email;
 
@@ -60,12 +59,12 @@ class FutureUser
 
     public function getNom(): ?string
     {
-        return $this->Nom;
+        return $this->nom;
     }
 
-    public function setNom(string $Nom): self
+    public function setNom(string $nom): self
     {
-        $this->Nom = $Nom;
+        $this->Nom = $nom;
 
         return $this;
     }
@@ -84,24 +83,24 @@ class FutureUser
 
     public function getNumeroTel(): ?int
     {
-        return $this->Numero_tel;
+        return $this->numero_tel;
     }
 
-    public function setNumeroTel(int $Numero_tel): self
+    public function setNumeroTel(int $numero_tel): self
     {
-        $this->Numero_tel = $Numero_tel;
+        $this->numero_tel = $numero_tel;
 
         return $this;
     }
 
-    public function getNationalit�e(): ?string
+    public function getNationalite(): ?string
     {
-        return $this->nationalit�e;
+        return $this->nationalite;
     }
 
-    public function setNationalit�e(string $nationalit�e): self
+    public function setNationalite(string $nationalite): self
     {
-        $this->nationalit�e = $nationalit�e;
+        $this->nationalite = $nationalite;
 
         return $this;
     }
