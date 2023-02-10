@@ -1,0 +1,446 @@
+import React, { useEffect, useState } from "react";
+import { useRouter } from 'next/router'
+import Loader from "../components/loader";
+
+
+
+const Admin: React.FC = () => {
+
+    const router = useRouter()
+    const [users, setUsers] = useState([])
+    const [cars, setCars] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [isUserDisplay, setIsUserDisplay] = useState(true)
+    const [isEditingCar, setIsEditingCar] = useState(false)
+    const [editingCar, setEditingCar] = useState({
+        price: undefined,
+        name: undefined,
+        img_url: undefined,
+        id: undefined
+
+    })
+    const [isCreatingCar, setIsCreatingCar] = useState(false)
+    const [creatingCar, setCreatingCar] = useState({
+        img_url: undefined,
+        price: undefined,
+        name: undefined
+    })
+
+    // get all value from input and set it to the state
+
+
+    const checkRole = (token: string) => {
+        setIsLoading(true)
+        console.log(token)
+
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+
+            },
+        };
+
+        fetch('http://localhost:5555/api/admin', options)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                if (response.status === 403) {
+                    router.push('/')
+                    console.log('user is not admin')
+                } else {
+                    // get all users
+                    getAllUsers()
+                }
+            })
+            .catch(err => console.error(err));
+
+    }
+
+    const getAllUsers = () => {
+        setIsLoading(true)
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+        fetch('http://localhost:5555/api/inscription', options)
+            .then(response => response.json())
+            .then(response => {
+                setIsLoading(false)
+                console.log(response)
+                setUsers(response)
+            })
+            .catch(err => console.error(err));
+    }
+
+    const getAllCar = () => {
+        setIsLoading(true)
+
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+        fetch('http://localhost:5555/api/cars', options)
+            .then(response => response.json())
+            .then(response => {
+                setIsLoading(false)
+                console.log(response)
+                setCars(response.cars)
+                //setUsers(response)
+            })
+            .catch(err => console.error(err));
+
+
+
+        /*
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }
+        fetch('http://localhost:5555/api/cars', options)
+            .then(response => response.json())
+            .then(response => {
+                setIsLoading(false)
+                console.log(response)
+                setCars(response.cars)
+                //setUsers(response)
+            })
+            .catch(err => console.error(err));
+*/
+    }
+
+    const validateUser = (id: string) => {
+        setIsLoading(true)
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id: id })
+        }
+        fetch('http://localhost:5555/api/inscription/valide-user', options)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                getAllUsers()
+            })
+            .catch(err => console.error(err));
+    }
+
+    const changeDisplay = (param: boolean) => {
+        setIsUserDisplay(param)
+        if (param) {
+            getAllUsers()
+            console.log('users')
+            document.querySelector('.adminPage__tabs__btn--cars')?.classList.remove('adminPage__tabs__btn--active')
+            document.querySelector('.adminPage__tabs__btn--user')?.classList.add('adminPage__tabs__btn--active')
+        } else {
+            getAllCar()
+            console.log('cars')
+            document.querySelector('.adminPage__tabs__btn--cars')?.classList.add('adminPage__tabs__btn--active')
+            document.querySelector('.adminPage__tabs__btn--user')?.classList.remove('adminPage__tabs__btn--active')
+        }
+    }
+
+    const editCar = (id: string) => {
+        setIsEditingCar(true)
+        // @ts-ignore
+        setEditingCar(cars[id - 1])
+    }
+
+    const updateCar = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(editingCar)
+        }
+        console.log(JSON.stringify(editingCar))
+        fetch(`http://localhost:5555/api/cars/edit/${editingCar.id}`, options)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                getAllCar()
+                setIsEditingCar(false)
+            })
+            .catch(err => console.error(err));
+    }
+
+    const createCar = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(creatingCar)
+        }
+        fetch(`http://localhost:1000/api/cars`, options)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                getAllCar()
+                setIsCreatingCar(false)
+            })
+            .catch(err => console.error(err));
+    }
+
+    const deleteCar = () => {
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        }
+        fetch(`http://localhost:1000/api/cars/${editingCar.id}`, options)
+            .then(response => response.json())
+            .then(response => {
+                console.log(response)
+                getAllCar()
+            })
+            .catch(err => console.error(err));
+    }
+
+    useEffect(() => {
+        if (localStorage.getItem('token')) {
+            setIsLoading(true)
+            // @ts-ignore
+            checkRole(localStorage.getItem('token'))
+        } else {
+            router.push('/')
+        }
+    }, [])
+
+    return (
+        <main className="adminPage">
+            {isLoading ? <Loader /> : null}
+            <div>
+                <h1 className="adminPage__title">Gestion back-office</h1>
+                <div className="adminPage__tabs">
+                    <button onClick={(e) => { changeDisplay(true) }} className="adminPage__tabs__btn adminPage__tabs__btn--user adminPage__tabs__btn--active">
+                        Liste des utilisateur inscrits
+                    </button>
+                    <button onClick={(e) => { changeDisplay(false) }} className="adminPage__tabs__btn adminPage__tabs__btn--cars">
+                        Liste des véhicules
+                    </button>
+                </div>
+
+                {isUserDisplay &&
+                    <div className="scrollableTable">
+                        <table className="adminPage__table">
+                            <thead className="adminPage__table__head">
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Nom / Prénom</th>
+                                    <th>Coordonnées</th>
+                                    <th>Nationalité</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="adminPage__table__body">
+                                {users.map((user: any) => {
+                                    return (
+                                        <tr key={user.id}>
+                                            <td>
+                                                {user.InscriptionValidate &&
+                                                    <span className="validate">✅ Validé</span>
+                                                }
+                                                {!user.InscriptionValidate &&
+                                                    <span className="notValidate">⚠️ En attente</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                {user.Name}
+                                                <br />
+                                                {user.LastName}
+                                            </td>
+                                            <td>
+                                                {user.Email}
+                                                <br />
+                                                {user.Tel}
+                                            </td>
+                                            <td>{user.Nationality}</td>
+                                            <td>
+                                                {user.InscriptionValidate &&
+                                                    <button className="cta cta--boxed cta--boxed--secondary">Editer</button>
+                                                }
+                                                {!user.InscriptionValidate &&
+                                                    <button className="cta cta--boxed" onClick={() => { validateUser(user.id) }}>Vérifier</button>
+                                                }
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                {!isUserDisplay &&
+                    <div className="scrollableTable">
+                        <table className="adminPage__table">
+                            <thead className="adminPage__table__head">
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Marque</th>
+                                    <th>Prix</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="adminPage__table__body">
+                                {cars.map((cars: any) => {
+                                    return (
+                                        <tr key={cars.id}>
+                                            <td>
+                                                <img src={cars.img_url} alt="" />
+                                            </td>
+                                            <td> {cars.name} </td>
+                                            <td> {cars.price} </td>
+                                            <td>
+                                                <button onClick={() => { editCar(cars.id) }} className="cta cta--boxed cta--boxed--secondary">Editer</button>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <button onClick={() => { setIsCreatingCar(true) }} className="cta cta--boxed">Ajouter</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                {isEditingCar &&
+                    <div className="adminPage__edit">
+                        <div className="adminPage__edit__content">
+                            <div className="adminPage__edit__head">
+                                <h2 className="adminPage__edit__title">Editer un véhicule</h2>
+                                <button
+                                    onClick={() => { setIsEditingCar(false) }}
+                                    className="adminPage__edit__close__btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
+                                </button>
+                            </div>
+
+                            <form className="adminPage__edit__form">
+                                <div className="adminPage__edit__form__group">
+                                    <label htmlFor="name">Nom du véhicule</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        id="name"
+                                        value={editingCar.name}
+                                        onChange={(e) => { // @ts-ignore
+                                            setEditingCar({ ...editingCar, name: e.target.value })
+                                        }}
+                                    />
+                                </div>
+                                <div className="adminPage__edit__form__group">
+                                    <label htmlFor="price">Prix</label>
+                                    <input
+                                        type="text"
+                                        name="price"
+                                        id="price"
+                                        value={editingCar.price}
+                                        onChange={(e) => { // @ts-ignore
+                                            setEditingCar({ ...editingCar, price: e.target.value })
+                                        }}
+                                    />
+                                </div>
+                                <div className="adminPage__edit__form__group">
+                                    <label htmlFor="img_url">Image</label>
+                                    <input
+                                        type="text"
+                                        name="img_url"
+                                        id="img_url"
+                                        value={editingCar.img_url}
+                                        onChange={(e) => { // @ts-ignore
+                                            setEditingCar({ ...editingCar, img_url: e.target.value })
+                                        }}
+                                    />
+                                </div>
+                                <button
+                                    className="cta cta--boxed"
+                                    onClick={(e) => { updateCar(e) }}
+                                >Enregistrer</button>
+                            </form>
+                            <div onClick={() => { setIsEditingCar(false); deleteCar() }} className="delete">supprimer</div>
+                        </div>
+                    </div>
+                }
+                {isCreatingCar &&
+                    <div className="adminPage__edit">
+                        <div className="adminPage__edit__content">
+                            <div className="adminPage__edit__head">
+                                <h2 className="adminPage__edit__title">Ajouter un véhicule</h2>
+                                <button
+                                    onClick={() => { setIsCreatingCar(false) }}
+                                    className="adminPage__edit__close__btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" /><path d="M0 0h24v24H0z" fill="none" /></svg>
+                                </button>
+                            </div>
+
+                            <form className="adminPage__edit__form">
+                                <div className="adminPage__edit__form__group">
+                                    <label htmlFor="name">Nom du véhicule</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        id="name"
+                                        value={creatingCar.name}
+                                        onChange={(e) => { // @ts-ignore
+                                            setCreatingCar({ ...creatingCar, name: e.target.value })
+                                        }}
+                                    />
+                                </div>
+                                <div className="adminPage__edit__form__group">
+                                    <label htmlFor="price">Prix</label>
+                                    <input
+                                        type="text"
+                                        name="price"
+                                        id="price"
+                                        value={creatingCar.price}
+                                        onChange={(e) => { // @ts-ignore
+                                            setCreatingCar({ ...creatingCar, price: e.target.value })
+                                        }}
+                                    />
+                                </div>
+                                <div className="adminPage__edit__form__group">
+                                    <label htmlFor="img_url">Image</label>
+                                    <input
+                                        type="text"
+                                        name="img_url"
+                                        id="img_url"
+                                        value={creatingCar.img_url}
+                                        onChange={(e) => { // @ts-ignore
+                                            setCreatingCar({ ...creatingCar, img_url: e.target.value })
+                                        }}
+                                    />
+                                </div>
+                                <button
+                                    className="cta cta--boxed"
+                                    onClick={(e) => { createCar(e) }}
+                                >Enregistrer</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+
+
+        </main>
+    )
+}
+export default Admin
