@@ -3,24 +3,26 @@ import { useRouter } from 'next/router'
 import Loader from "../components/loader";
 
 
-
 const Login = () => {
 
     const router = useRouter()
 
-    const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(false)
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [message, setMessage] = useState('');
+
 
     //handle email input change
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(e.target.value)
         setEmail(e.target.value)
     }
 
     //handle password input change
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(e.target.value)
         setPassword(e.target.value)
     }
 
@@ -37,16 +39,16 @@ const Login = () => {
             },
         };
 
-        fetch('http://localhost:8000/api/.user/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: '{"username": "' + email + '", "password": "' + password + '"}'
+        fetch('http://localhost:8000/api/.user/checkrole', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
         })
             .then(response => response.json())
             .then(response => {
                 console.log(response)
-                console.log("zbii")
-                setIsLoading(false)
                 if (response.status === 403) {
                     router.push('/')
                     console.log('user is not admin')
@@ -60,11 +62,23 @@ const Login = () => {
     }
 
 
+    // const handleSubmit = () => {
+    //   fetch("http://localhost:8000/api/.user/login", {
+    //     body: JSON.stringify({ username: "admin@myapp.com", password: "admin" }),
+    //     method: "POST",
+    // headers: {
+    //   'Content-Type': 'application/json'
+    // }
+    //   }).then((response) => response.json()).then((response) => {
+    //console.log(response)
+    // localStorage.setItem("token", response.token);
+    // })
+    // }
+    // }
+
     //catch form submit
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        setIsLoading(true)
 
         const options = {
             method: 'POST',
@@ -73,28 +87,28 @@ const Login = () => {
         };
 
         fetch("http://localhost:8000/api/.user/login", {
-            body: JSON.stringify({ username: email, password: password }),
             method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: email, password: password }),
         }).then((response) => response.json()).then((response) => {
             console.log(response)
-            localStorage.setItem("token", response.token);
-        })
+            localStorage.setItem("token", response.token)
+            router.push("/")
+        });
+
+
+
+
+        // .then((response) => response.json()).then((response) => {
+        // console.log(response)
+        // localStorage.setItem("token", response.token);
+        // console.log(checkRole(response.token))
+        // checkRole(response.token) })
     }
-    useEffect(() => {
-        if (localStorage.getItem('token')) {
-            setIsLoading(true)
-            // @ts-ignore
-            checkRole(localStorage.getItem('token'))
-        }
-    }, [])
 
 
     return (
         <main className="loginPage">
-            {isLoading ? <Loader /> : null}
             <div className='loginPage__link'>
                 <link href="/" aria-label="retour" />
             </div>
@@ -115,7 +129,7 @@ const Login = () => {
                         onChange={(e: any) => { handlePasswordChange(e) }}
                         required
                     />
-                    <button type="submit"><strong>Connexion</strong></button>
+                    <button type="submit" onSubmit={(e: any) => { handleFormSubmit(e) }}><strong>Connexion</strong></button>
                 </form>
                 {error ? <p className="loginPage__center__error">Identifiant ou mot de passe incorrect</p> : null}
             </div>
