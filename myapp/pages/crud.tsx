@@ -14,11 +14,6 @@ function App() {
     const [prix, setPrix] = useState("");
     const [image, setImage] = useState("");
     const [error, setError] = useState("");
-    const [creatingCar, setCreatingCar] = useState({
-        img_url: undefined,
-        price: undefined,
-        name: undefined
-    })
 
     useEffect(() => {
         fetchItems();
@@ -32,41 +27,6 @@ function App() {
             console.error(error);
             setError("Impossible de récupérer les éléments.");
         }
-    }
-
-    const getAllCar = () => {
-
-        const options = {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }
-        fetch('http://localhost:5000/car', options)
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-                //setUsers(response)
-            })
-            .catch(err => console.error(err));
-    }
-
-    const createCar = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(creatingCar)
-        }
-        fetch(`http://localhost:8000/car`, options)
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-                getAllCar()
-            })
-            .catch(err => console.error(err));
     }
 
     async function addItem() {
@@ -113,8 +73,6 @@ function App() {
                     </li>
                 ))}
             </ul>
-            <button onClick={() => getAllCar()}>didplay</button>
-            <p>createCar()</p>
             <h2>Ajouter un élément</h2>
             <div>
                 <label>Nom:</label>

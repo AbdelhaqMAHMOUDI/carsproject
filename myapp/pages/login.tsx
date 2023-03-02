@@ -93,7 +93,7 @@ const Login = () => {
         }).then((response) => response.json()).then((response) => {
             console.log(response)
             localStorage.setItem("token", response.token)
-            router.push("/")
+            router.push("/admin")
         });
 
 

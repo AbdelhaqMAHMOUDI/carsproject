@@ -1,12 +1,20 @@
 from flask import Flask, render_template, jsonify, request
 from modles import db, CarModel
 import json
+# from flask_cors import CORS
 
 
 app = Flask(__name__)
+# CORS(app, resources={r"/*": {"origins": "*"}})
+
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://admin:admin@db:3306/lesson'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+# response.headers.add('Access-Control-Allow-Headers',
+#                      'Content-Type,Authorization')
+# response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+# disable cors
 
 
 @app.before_first_request
@@ -36,7 +44,7 @@ def get_car(id):
     return jsonify(car.serialize)
 
 
-@app.route("/add", methods=["POST"])
+@app.route("/car/add", methods=["POST"])
 def add():
     data = json.loads(request.data)
     name = data["name"]
@@ -53,3 +61,8 @@ def delete(id):
     db.session.query(CarModel).filter_by(id=id).delete()
     db.session.commit()
     return "Element supprimé avec succeès"
+
+
+if __name__ == "__main__":
+
+    app.run('0.0.0.0', port=5000, debug=True)

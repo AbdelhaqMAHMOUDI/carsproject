@@ -74,6 +74,33 @@ app.post("/api/.user/register", (req, res) => {
 });
 
 
+// get all cars
+app.get('/api/cars', (req, res) => {
+
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  }
+
+  axios.get('http://localhost:5000/cars', options
+  ).then((response) => {
+    console.log(response)
+    // sent code
+    res.status(response.status);
+    res.send(response.data);
+  }
+  ).catch((error) => {
+    console.log(error)
+    res.send(error.response.data);
+    res.status(error.response.data.code);
+  }
+  )
+
+});
+
+
 
 app.listen(port, () => {
   return console.log(`Express is listening at http://localhost:${port}`);
