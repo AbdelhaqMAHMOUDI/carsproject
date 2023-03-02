@@ -28,6 +28,7 @@ function checkHeaders(req, res, next) {
 app.use(cors({
   origin: '*'
 }));
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(checkToken());
@@ -97,6 +98,33 @@ app.get('/api/cars', (req, res) => {
     res.status(error.response.data.code);
   }
   )
+
+});
+
+app.get('/api/admin', (req, res) => {
+
+  const options = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': req.headers['authorization']
+    }
+  }
+
+  axios.get('http://nginx/api/admin', options
+  ).then((response) => {
+    console.log(response)
+    // sent code
+    res.status(response.status);
+    res.send(response.data);
+  }
+  ).catch((error) => {
+    console.log(error)
+    res.send(error.response.data);
+    res.status(error.response.data.code);
+  }
+  )
+
 
 });
 

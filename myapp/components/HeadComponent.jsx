@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Button } from './Button';
-
-
+import { useRouter } from 'next/router';
 
 
 export const Header = ({ user }) => (
+
   <header>
     <div className="wrapper">
       <div>

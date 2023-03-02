@@ -16,5 +16,5 @@ export const endPointServiceUserCheckRole = `${endPointServiceUserInfo}/check_ro
 export const urlsAcceptedWithoutConnection = [
     urlApi,
     urlApiUser,
-    urlApiUserLogin,
+    urlApiUserLogin
 ];

@@ -16,13 +16,11 @@ const Login = () => {
 
     //handle email input change
     const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value)
         setEmail(e.target.value)
     }
 
     //handle password input change
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value)
         setPassword(e.target.value)
     }
 
@@ -39,13 +37,7 @@ const Login = () => {
             },
         };
 
-        fetch('http://localhost:8000/api/.user/checkrole', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            }
-        })
+        fetch('http://localhost:8000/api/admin', options)
             .then(response => response.json())
             .then(response => {
                 console.log(response)
@@ -53,7 +45,7 @@ const Login = () => {
                     router.push('/')
                     console.log('user is not admin')
                 } else {
-                    router.push("/admin")
+                    router.push('/admin')
                     console.log('user is admin')
                 }
             })
@@ -93,7 +85,7 @@ const Login = () => {
         }).then((response) => response.json()).then((response) => {
             console.log(response)
             localStorage.setItem("token", response.token)
-            router.push("/admin")
+            checkRole(response.token)
         });
 
 

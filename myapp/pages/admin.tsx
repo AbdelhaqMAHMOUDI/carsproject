@@ -3,21 +3,21 @@ import axios from "axios";
 
 interface Car {
     id?: number;
-    nom: string;
-    prix: number | string;
+    name: string;
+    price: number | string;
     image: string;
 }
 
 function App() {
     const [car, setCar] = useState<Car[]>([]);
-    const [nom, setNom] = useState("");
-    const [prix, setPrix] = useState("");
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState("");
     const [image, setImage] = useState("");
     const [error, setError] = useState("");
     const [creatingCar, setCreatingCar] = useState({
-        img_url: undefined,
+        name: undefined,
         price: undefined,
-        name: undefined
+        image: undefined
     })
 
     useEffect(() => {
@@ -45,41 +45,23 @@ function App() {
         fetch('http://localhost:5000/car', options)
             .then(response => response.json())
             .then(response => {
-                console.log(response)
                 //setUsers(response)
             })
             .catch(err => console.error(err));
     }
 
-    const createCar = (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault()
-        const options = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(creatingCar)
-        }
-        fetch(`http://localhost:8000/car`, options)
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-                getAllCar()
-            })
-            .catch(err => console.error(err));
-    }
 
     async function addItem() {
         try {
             const newCar = {
-                nom,
-                prix,
+                name,
+                price,
                 image
             };
             await axios.post("http://localhost:5000/car/add", newCar);
             setCar([...car, newCar]);
-            setNom("");
-            setPrix("");
+            setName("");
+            setPrice("");
             setImage("");
             setError("");
         } catch (error) {
@@ -104,25 +86,23 @@ function App() {
             <h1>Liste des éléments</h1>
             {error && <div>{error}</div>}
             <ul>
-                {car.map((car) => (
-                    <li key={car.id}>
-                        <div>{car.nom}</div>
-                        <div>{car.prix}</div>
+                {car.map((car, n) => (
+                    <li key={n}>
+                        <div>{car.name}</div>
+                        <div>{car.price}</div>
                         <div>{car.image}</div>
                         <button onClick={() => deleteItem(car.id)}>Supprimer</button>
                     </li>
                 ))}
             </ul>
-            <button onClick={() => getAllCar()}>didplay</button>
-            <p>createCar()</p>
             <h2>Ajouter un élément</h2>
             <div>
                 <label>Nom:</label>
-                <input type="text" value={nom} onChange={(e) => setNom(e.target.value)} />
+                <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div>
                 <label>Prix:</label>
-                <input type="text" value={prix} onChange={(e) => setPrix(e.target.value)} />
+                <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
             </div>
             <div>
                 <label>Image:</label>
